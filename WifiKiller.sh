@@ -18,7 +18,7 @@ fi
 iwconfig > tmp 2>/dev/null
 INTERFACE=$(grep -m 1 '802' tmp | awk '{print $1}') #default interface
 rm tmp 2>/dev/null
-IP=`route -n|grep ^0.0.0.0|cut -d' ' -f 10`
+IP=`route -n | grep 'UG[ \t]' | awk '{print $2}'`
 
 GOTOHELP()
 {
@@ -51,8 +51,8 @@ echo -e "    ""${window}|#|${txtrst}""                                       ""$
 echo -e "    ""${window}|@|${txtrst}""        Network Scanning...            ""${window}|@|${txtrst}"
 echo -e "    ""${window}|#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#|${txtrst}"
 echo -e 
-nmap_result=$(sudo nmap -sP 192.168.0.1/24) #checks who's responding to ping 192.168.1.0-256
-own_ip=$(ifconfig wlp2s0b1 | grep inet | awk '{print $2}' | cut -d':' -f2) #gets your own ip
+nmap_result=$(sudo nmap -sP $IP/24) #checks who's responding to ping 192.168.1.0-256
+own_ip=$(ifconfig $INTERFACE | grep inet | awk '{print $2}' | cut -d':' -f2) #gets your own ip
 temp_mac=$(echo "$nmap_result" | grep "MAC Address:" | awk '{print $3;}') #gets the mac addresses list
 temp_ip=$(echo "$nmap_result" | grep "192.168." | awk '{print $5;}' | grep -v "$own_ip") #gets the ip list
 temp_vendor=$(echo "$nmap_result" | grep "MAC Address:" | awk '{print $4;}') #gets the vendor list
