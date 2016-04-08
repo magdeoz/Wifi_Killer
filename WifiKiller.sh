@@ -1,5 +1,13 @@
 #!/bin/bash
-# GPLv2
+bldred='\e[1;31m' # BoldRed
+red='\e[7;31m'    # Red
+txtgrn='\e[0;32m' # Green
+txtrst='\e[0m'    # Text Reset
+bldcyn='\e[1;36m' # Cyan
+bld='\e[1;1m'     # Bold
+sub='\e[1;7m'
+mk='\e[0;9m'      # Subrayado
+window='\e[4;36m' # Window
 version='1.1'
 INTERFACE=wlp2s0b1 #default interface
 IP=`route -n|grep ^0.0.0.0|cut -d' ' -f 10`
@@ -7,15 +15,20 @@ IP=`route -n|grep ^0.0.0.0|cut -d' ' -f 10`
 GOTOHELP()
 {
 	clear
-	echo -e "    ""${window}*******************************************${txtrst}"
-    echo "  -list: list devices on the network (nmap)"
-    echo "  -all: block all devices on the network (arpspoof)"
-    echo "  xxx.xxx.xxx.xxx: block the provided ip (arpspoof)"
-    echo "  -help: show this help"
-    echo "  -i: choose interface (wlan0,eth0 etc)"
-    echo ""
-    echo "  Presione cualquier tecla para continuar..."
-    read -n1  
+	echo -e "    ""${window}|*******************************************|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""xxx.xxx.xxx.xxx: block the provided ip ""|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}"" For your Network Interface open a     ""${window}|*|${txtrst}"
+    echo -e "    ""${window}|*|${txtrst}""            terminal                   ""${window}|*|${txtrst}"
+ 	echo -e "    ""${window}|*|${txtrst}"" and type 'iwconfig' without quotes    ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*******************************************|${txtrst}"
+	echo " "
+    echo "    Presione cualquier tecla para continuar..."
+    read -n1
     clear
     GOTOMAIN
 }
@@ -41,15 +54,21 @@ readarray -t vendor <<<"$temp_vendor"
 
 len=${#mac[@]} # length of mac addresses array
 echo " "
+echo -e "    ""${window}|___________________________________________|${txtrst}"
+echo " "
 echo "    ""List of connected devices (vendor: ip - mac):"
 echo "    ""Your own ip address is $own_ip"
+echo ""
 for (( i=0; i<${len}; i++ ));
 do
+echo -e "    ""${window}|___________________________________________|${txtrst}"
 echo " "
-echo "    "${vendor[i]}": "${ip[i]}" - "${mac[i]}
+echo -e "    " ${vendor[i]}": "${ip[i]}" - "${mac[i]}
 done
-echo " "
-echo "   Presione cualquier tecla para continuar"
+echo -e "    ""${window}|___________________________________________|${txtrst}"
+echo ""
+echo "        Presione cualquier tecla para continuar"
+
 read -n1
 GOTOMAIN
 }
