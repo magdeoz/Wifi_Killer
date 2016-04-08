@@ -1,31 +1,39 @@
 #!/bin/bash
 bldred='\e[1;31m' # BoldRed
 red='\e[7;31m'    # Red
-txtgrn='\e[0;32m' # Green
-txtrst='\e[0m'    # Text Reset
-bldcyn='\e[1;36m' # Cyan
+txtgrn='\e[0;90m' # Green
+txtrst='\e[0;31m'    # Text Reset
+bldcyn='\e[1;32m' # Cyan
 bld='\e[1;1m'     # Bold
 sub='\e[1;7m'
 mk='\e[0;9m'      # Subrayado
-window='\e[4;36m' # Window
-version='1.1'
-INTERFACE=wlp2s0b1 #default interface
+window='\e[0;31m' # Window
+version='1.5'
+
+if [ "$(id -u)" != "0" ]; then
+   echo "Sorry, you must run this script as root." 1>&2
+   exit 1
+fi
+
+iwconfig > tmp 2>/dev/null
+INTERFACE=$(grep -m 1 '802' tmp | awk '{print $1}') #default interface
+rm tmp 2>/dev/null
 IP=`route -n|grep ^0.0.0.0|cut -d' ' -f 10`
 
 GOTOHELP()
 {
 	clear
-	echo -e "    ""${window}|*******************************************|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""xxx.xxx.xxx.xxx: block the provided ip ""|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}"" For your Network Interface open a     ""${window}|*|${txtrst}"
-    echo -e "    ""${window}|*|${txtrst}""            terminal                   ""${window}|*|${txtrst}"
- 	echo -e "    ""${window}|*|${txtrst}"" and type 'iwconfig' without quotes    ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*******************************************|${txtrst}"
+	echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}""xxx.xxx.xxx.xxx: block the provided ip ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}"" For your Network Interface open a     ""${window}|@|${txtrst}"
+    echo -e "    ""${window}|#|${txtrst}""            terminal                   ""${window}|#|${txtrst}"
+ 	echo -e "    ""${window}|@|${txtrst}"" and type 'iwconfig' without quotes    ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
 	echo " "
     echo "    Presione cualquier tecla para continuar..."
     read -n1
@@ -36,12 +44,13 @@ GOTOHELP()
 #List hosts on your network. Using sudo we can access to the mac address and the nic vendor.
 GOTOUSERS () {
 clear
-echo -e "    ""${window}|*******************************************|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""        Network Scanning...            ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*******************************************|${txtrst}"
+echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}""        Network Scanning...            ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#|${txtrst}"
+echo -e 
 nmap_result=$(sudo nmap -sP 192.168.0.1/24) #checks who's responding to ping 192.168.1.0-256
 own_ip=$(ifconfig wlp2s0b1 | grep inet | awk '{print $2}' | cut -d':' -f2) #gets your own ip
 temp_mac=$(echo "$nmap_result" | grep "MAC Address:" | awk '{print $3;}') #gets the mac addresses list
@@ -54,7 +63,7 @@ readarray -t vendor <<<"$temp_vendor"
 
 len=${#mac[@]} # length of mac addresses array
 echo " "
-echo -e "    ""${window}|___________________________________________|${txtrst}"
+#echo -e "    ""${window}|___________________________________________|${txtrst}"
 echo " "
 echo "    ""List of connected devices (vendor: ip - mac):"
 echo "    ""Your own ip address is $own_ip"
@@ -67,23 +76,24 @@ echo -e "    " ${vendor[i]}": "${ip[i]}" - "${mac[i]}
 done
 echo -e "    ""${window}|___________________________________________|${txtrst}"
 echo ""
-echo "        Presione cualquier tecla para continuar"
+echo "       Presione cualquier tecla para continuar"
 
 read -n1
 GOTOMAIN
 }
 
+
 #Kills the ip in the argument, all if there is no argument.
 GOTOSPECIFIC () {
 clear
-echo -e "    ""${window}|*******************************************|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}"" IP formart: xxx.xxx.xxx.xxx           ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}"" Type C for cancel                     ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*******************************************|${txtrst}"
+echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}"" IP formart: xxx.xxx.xxx.xxx           ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}"" Type C for cancel                     ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#|${txtrst}"
 read -p '    IP or C (cancel): ' victim
 if [[ "$victim" =~ [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3} ]]; then
     echo "gonna kill em $victim "
@@ -115,12 +125,12 @@ echo -n $oldipforward > /proc/sys/net/ipv4/ip_forward
 
 GOTOKILLALL () {
 clear
-echo -e "    ""${window}|*******************************************|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*|${txtrst}""  press control-c  to stop             ""${window}|*|${txtrst}"
-echo -e "    ""${window}|*******************************************|${txtrst}"
+echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+echo -e "    ""${window}|@|${txtrst}""  press control-c  to stop             ""${window}|@|${txtrst}"
+echo -e "    ""${window}|#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#|${txtrst}"
 sleep 2s
 #First of all, check if the required programs are installed:
 type arpspoof >/dev/null 2>&1 || { echo >&2 "Arpspoof it's required but it's not installed.\n Do 'sudo apt-get install dsniff' Aborting."; exit 1; }
@@ -143,18 +153,19 @@ kill $1
 
 GOTOMAIN () {
 	clear
-	echo -e "    ""${window}|*******************************************|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""  ""Please select your option:""           ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""  ""1. KILL ALL""                          ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""  ""2. SPECIFIC IP""                       ""${window}|*|${txtrst}"
-    echo -e "    ""${window}|*|${txtrst}""  ""3. SHOW USERS IP's""                   ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""  ""4. HELP""                              ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""  ""Q/q - Exit Script""                    ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-	echo -e "    ""${window}|*******************************************|${txtrst}"
+	echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}""  ""Please select your option:""           ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}""  ""1) [+] KILL ALL""                      ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""  ""2) [+] SPECIFIC IP""                   ""${window}|#|${txtrst}"
+    echo -e "    ""${window}|@|${txtrst}""  ""3) [+] SHOW USERS IP's""               ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""  ""4) [+] HELP""                          ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@|${txtrst}"" ""Q/q [-] Exit Script""                   ""${window}|@|${txtrst}"
+	echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+	echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
 	read -p '    Option: ' OPT
 	if [[ ! $OPT == "1" ]]; then
 		if [[ ! $OPT == "2" ]]; then
@@ -163,11 +174,11 @@ GOTOMAIN () {
                     if [[ ! $OPT == q ]]; then
 					    if [[ ! $OPT == Q ]]; then
 					    clear
-					    echo -e "    ""${window}|*******************************************|${txtrst}"
-					    echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-					    echo -e "    ""${window}|*|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|*|${txtrst}"
-					    echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
-					    echo -e "    ""${window}|*******************************************|${txtrst}"
+					    echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
+					    echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+					    echo -e "    ""${window}|@|${txtrst}""      ""${bld}WIFI KILLER - Version $(echo "$version")${txtrst}""        ""${window}|@|${txtrst}"
+					    echo -e "    ""${window}|#|${txtrst}""                                       ""${window}|#|${txtrst}"
+					    echo -e "    ""${window}|@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@|${txtrst}"
 					    echo " "
 					    echo -e "    ""${bldred}Invalid Input: Please try again!${txtrst}"
 					    sleep 1s
@@ -183,8 +194,8 @@ GOTOMAIN () {
 	2) GOTOSPECIFIC ;;
     3) GOTOUSERS ;;
 	4) GOTOHELP ;;
-	Q) clear; echo "Goodbye"; read; clear; exit;;
-	q) clear; echo "Goodbye"; read; clear; exit;;
+	Q) clear; echo -e "${bldcyn}Goodbye"; sleep 2s; clear; exit;;
+	q) clear; echo -e "Goodbye"; sleep 2s; clear; exit;;
 	esac
 }
 
