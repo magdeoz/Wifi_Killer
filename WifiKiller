@@ -132,6 +132,7 @@ echo -e "    ""${window}|#|${txtrst}""                                       ""$
 echo -e "    ""${window}|@|${txtrst}""  press control-c  to stop             ""${window}|@|${txtrst}"
 echo -e "    ""${window}|#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#|${txtrst}"
 sleep 2s
+
 #First of all, check if the required programs are installed:
 type arpspoof >/dev/null 2>&1 || { echo >&2 "Arpspoof it's required but it's not installed.\n Do 'sudo apt-get install dsniff' Aborting."; exit 1; }
 type nmap >/dev/null 2>&1 || { echo >&2 "Nmap it's required but it's not installed.\n Do 'sudo apt-get install nmap' Aborting."; exit 1; }
